@@ -1,0 +1,47 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.app .app-aside {
+  display: flex;
+  flex-direction: column;
+  width: 272px;
+  height: 100%;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.app .app-aside-header {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.app .app-aside-menu {
+  flex: 1;
+  padding: 12px;
+  display: grid;
+  row-gap: 4px;
+  grid-auto-rows: min-content;
+}
+
+.app .app-aside-menu .app-aside-menu-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color .3s;
+  cursor: default;
+}
+
+.app .app-aside-menu .app-aside-menu-item:hover,
+.app .app-aside-menu .app-aside-menu-item__active {
+  background-color: #f1f3f5;
+}
+
+.app .app-main {
+  flex: 1;
+  padding: 12px;
+}

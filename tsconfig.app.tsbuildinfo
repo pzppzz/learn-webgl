@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/demos/index.tsx","./src/demos/demo01/index.tsx","./src/demos/demo02/index.tsx","./src/demos/demo03/index.tsx","./src/demos/demo04/index.tsx","./src/utils/createprogram.ts","./src/utils/webgl.ts"],"version":"5.6.3"}
