@@ -4,8 +4,8 @@ import glsl from "vite-plugin-glsl";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), glsl()],
-  server: {
-    port: 8000,
-  },
+	plugins: [react(), glsl()],
+	server: {
+		port: 8000,
+	},
 });
