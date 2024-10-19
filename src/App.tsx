@@ -1,15 +1,15 @@
 import { Suspense, useState } from "react";
-import DemoList from "./demos";
+import { DEMOS } from "./demos";
 import "./app.css";
 
 function App() {
-	const [currentIndex, setCurrentIndex] = useState(3);
+	const [currentIndex, setCurrentIndex] = useState(5);
 
 	const handleShowDemo = (index: number) => {
 		setCurrentIndex(index);
 	};
 
-	const Demo = DemoList[currentIndex].component;
+	const Demo = DEMOS[currentIndex].component;
 
 	return (
 		<div className="app">
@@ -18,7 +18,7 @@ function App() {
 					<h1>Learn WebGL</h1>
 				</div>
 				<div className="app-aside-menu">
-					{DemoList.map((demo, index) => {
+					{DEMOS.map((demo, index) => {
 						return (
 							<div
 								key={demo.name}

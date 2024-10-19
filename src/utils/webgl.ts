@@ -43,18 +43,24 @@ export function createProgram(
 	return program;
 }
 
+export function resizeGLCanvas(gl: WebGLRenderingContext, width: number, height: number) {
+	(gl.canvas as HTMLCanvasElement).style.width = width + "px";
+	(gl.canvas as HTMLCanvasElement).style.height = height + "px";
+	(gl.canvas as HTMLCanvasElement).width = width * window.devicePixelRatio;
+	(gl.canvas as HTMLCanvasElement).height = height * window.devicePixelRatio;
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+}
+
 export function createWebGL(options: CreateWebGLOptions = {}) {
 	const { width = 500, height = 300 } = options;
 	const canvas = document.createElement("canvas");
-	canvas.style.width = width + "px";
-	canvas.style.height = height + "px";
-	canvas.width = width * window.devicePixelRatio;
-	canvas.height = height * window.devicePixelRatio;
 
 	const gl = canvas.getContext("webgl");
 	if (!gl) {
 		throw new Error("WebGL is not supported");
 	}
+
+	resizeGLCanvas(gl, width, height);
 
 	return {
 		gl,

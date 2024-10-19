@@ -1,20 +1,19 @@
 import { lazy } from "react";
 
-export default [
-	{
-		name: "清除画布",
-		component: lazy(() => import("./demo01")),
-	},
-	{
-		name: "点、线和三角形",
-		component: lazy(() => import("./demo02")),
-	},
-	{
-		name: "矩形",
-		component: lazy(() => import("./demo03")),
-	},
-	{
-		name: "多边形和圆",
-		component: lazy(() => import("./demo04")),
-	},
-];
+interface DemoItem {
+	name: string;
+	component: React.LazyExoticComponent<() => JSX.Element>;
+}
+
+export const DEMOS: DemoItem[] = [];
+
+function addDemo(name: string, path: string) {
+	DEMOS.push({ name, component: lazy(() => import(path)) });
+}
+
+addDemo("清除画布", "./demo01");
+addDemo("点、线和三角形", "./demo02");
+addDemo("矩形", "./demo03");
+addDemo("多边形和圆", "./demo04");
+addDemo("监听窗口尺寸变化", "./demo05");
+addDemo("裁剪坐标转换", "./demo06");
