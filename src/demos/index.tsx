@@ -1,23 +1,20 @@
-import { Demo01 } from "./demo01";
-import { Demo02 } from "./demo02";
-import { Demo03 } from "./demo03";
-import { Demo04 } from "./demo04";
+import { lazy } from "react";
 
 export default [
 	{
-		name: "Demo01",
-		component: <Demo01 />,
+		name: "清除画布",
+		component: lazy(() => import("./demo01")),
 	},
 	{
-		name: "Demo02",
-		component: <Demo02 />,
+		name: "点、线和三角形",
+		component: lazy(() => import("./demo02")),
 	},
 	{
-		name: "Demo03",
-		component: <Demo03 />,
+		name: "矩形",
+		component: lazy(() => import("./demo03")),
 	},
 	{
-		name: "Demo04",
-		component: <Demo04 />,
+		name: "多边形和圆",
+		component: lazy(() => import("./demo04")),
 	},
 ];

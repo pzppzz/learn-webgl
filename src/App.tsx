@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import DemoList from "./demos";
 import "./app.css";
 
@@ -9,11 +9,13 @@ function App() {
 		setCurrentIndex(index);
 	};
 
+	const Demo = DemoList[currentIndex].component;
+
 	return (
 		<div className="app">
 			<div className="app-aside">
 				<div className="app-aside-header">
-					<h1>WebGL</h1>
+					<h1>Learn WebGL</h1>
 				</div>
 				<div className="app-aside-menu">
 					{DemoList.map((demo, index) => {
@@ -25,13 +27,17 @@ function App() {
 								}`}
 								onClick={() => handleShowDemo(index)}
 							>
-								{demo.name}
+								{index + 1 + ". " + demo.name}
 							</div>
 						);
 					})}
 				</div>
 			</div>
-			<div className="app-main">{DemoList[currentIndex] && DemoList[currentIndex].component}</div>
+			<div className="app-main">
+				<Suspense fallback={<h1>loading...</h1>}>
+					<Demo />
+				</Suspense>
+			</div>
 		</div>
 	);
 }

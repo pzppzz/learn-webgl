@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createWebGL } from "../../utils/webgl";
 
-export const Demo01: React.FC = () => {
+export default function Demo01() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const glRef = useRef<WebGLRenderingContext>();
 
@@ -25,4 +25,4 @@ export const Demo01: React.FC = () => {
 	}, []);
 
 	return <div ref={containerRef}></div>;
-};
+}

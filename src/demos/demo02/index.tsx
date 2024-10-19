@@ -4,7 +4,7 @@ import { createProgram, createWebGL } from "../../utils/webgl";
 import vertexShaderSource from "../../shaders/basic/vertex.glsl";
 import fragmentShaderSource from "../../shaders/basic/frag.glsl";
 
-export const Demo02: React.FC = () => {
+export default function Demo02() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const glRef = useRef<WebGLRenderingContext>();
 
@@ -67,4 +67,4 @@ export const Demo02: React.FC = () => {
 	}, []);
 
 	return <div ref={containerRef} style={{ width: "100%", height: "100%" }}></div>;
-};
+}
