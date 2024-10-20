@@ -1,25 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createProgram, createWebGL, resizeGLCanvas } from "../../utils/webgl";
 
 import vertexShaderSource from "../../shaders/demo09/vertex.glsl";
 import fragmentShaderSource from "../../shaders/demo09/frag.glsl";
 import { mat3 } from "../../utils/matrix";
+import { useSetupInputUI } from "../../hooks/useSetupInputUI";
 
 export default function Demo09() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isDirty = useRef(true);
-	const [transforms] = useState({
-		x: 100,
-		y: 100,
-		scaleX: 1,
-		scaleY: 1,
-		rotation: 0,
-	});
-
-	const onTransformChange = (type: keyof typeof transforms, value: number) => {
-		transforms[type] = value;
-		isDirty.current = true;
-	};
+	const { syncUIState, UIView } = useSetupInputUI(
+		{
+			x: {
+				type: "range",
+				label: "translateX",
+				min: -600,
+				max: 600,
+				step: 1,
+				defaultValue: 100,
+			},
+			y: {
+				type: "range",
+				label: "translateY",
+				min: -600,
+				max: 600,
+				step: 1,
+				defaultValue: 100,
+			},
+			scaleX: {
+				type: "range",
+				label: "scaleX",
+				min: -5,
+				max: 5,
+				step: 0.1,
+				defaultValue: 1,
+			},
+			scaleY: {
+				type: "range",
+				label: "scaleY",
+				min: -5,
+				max: 5,
+				step: 0.1,
+				defaultValue: 1,
+			},
+			rotation: {
+				type: "range",
+				label: "rotation",
+				min: 0,
+				max: 360,
+				step: 1,
+				defaultValue: 0,
+			},
+		},
+		() => {
+			isDirty.current = true;
+		},
+	);
 
 	const render = () => {
 		if (containerRef.current) {
@@ -45,11 +81,19 @@ export default function Demo09() {
 				gl.clear(gl.COLOR_BUFFER_BIT);
 				gl.useProgram(program);
 
-				const angle = 360 - transforms.rotation;
+				const angle = 360 - syncUIState.current.rotation;
 				const rotateMat = mat3.rotate(mat3.create(), angle);
 				const projectionMat = mat3.projection(gl.canvas.width, gl.canvas.height);
-				const scaleMat = mat3.scale(mat3.create(), transforms.scaleX, transforms.scaleY);
-				const translateMat = mat3.translate(mat3.create(), transforms.x, transforms.y);
+				const scaleMat = mat3.scale(
+					mat3.create(),
+					syncUIState.current.scaleX,
+					syncUIState.current.scaleY,
+				);
+				const translateMat = mat3.translate(
+					mat3.create(),
+					syncUIState.current.x,
+					syncUIState.current.y,
+				);
 
 				gl.enableVertexAttribArray(posAttribLoc);
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -88,58 +132,7 @@ export default function Demo09() {
 			<div
 				style={{ position: "absolute", top: 0, right: 0, display: "flex", flexDirection: "column" }}
 			>
-				<label>
-					translateX:
-					<input
-						type="range"
-						min={-600}
-						max={600}
-						defaultValue={transforms.x}
-						onChange={(e) => onTransformChange("x", +e.target.value)}
-					/>
-				</label>
-				<label>
-					translateY:
-					<input
-						type="range"
-						min={-600}
-						max={600}
-						defaultValue={transforms.y}
-						onChange={(e) => onTransformChange("y", +e.target.value)}
-					/>
-				</label>
-				<label>
-					scaleX:
-					<input
-						type="range"
-						min={-5}
-						max={5}
-						step={0.1}
-						defaultValue={transforms.scaleX}
-						onChange={(e) => onTransformChange("scaleX", +e.target.value)}
-					/>
-				</label>
-				<label>
-					scaleY:
-					<input
-						type="range"
-						min={-5}
-						max={5}
-						step={0.1}
-						defaultValue={transforms.scaleY}
-						onChange={(e) => onTransformChange("scaleY", +e.target.value)}
-					/>
-				</label>
-				<label>
-					rotation:
-					<input
-						type="range"
-						min={0}
-						max={360}
-						defaultValue={transforms.rotation}
-						onChange={(e) => onTransformChange("rotation", +e.target.value)}
-					/>
-				</label>
+				{UIView}
 			</div>
 		</div>
 	);

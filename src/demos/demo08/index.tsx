@@ -1,24 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createProgram, createWebGL, resizeGLCanvas } from "../../utils/webgl";
 
 import vertexShaderSource from "../../shaders/demo08/vertex.glsl";
 import fragmentShaderSource from "../../shaders/demo08/frag.glsl";
+import { useSetupInputUI } from "../../hooks/useSetupInputUI";
 
 export default function Demo08() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isDirty = useRef(true);
-	const [transforms] = useState({
-		x: 200,
-		y: 200,
-		scaleX: 1,
-		scaleY: 1,
-		rotation: 0,
-	});
-
-	const onTransformChange = (type: keyof typeof transforms, value: number) => {
-		transforms[type] = value;
-		isDirty.current = true;
-	};
+	const { syncUIState, UIView } = useSetupInputUI(
+		{
+			x: {
+				type: "range",
+				label: "translateX",
+				min: -600,
+				max: 600,
+				step: 1,
+				defaultValue: 200,
+			},
+			y: {
+				type: "range",
+				label: "translateY",
+				min: -600,
+				max: 600,
+				step: 1,
+				defaultValue: 200,
+			},
+			scaleX: {
+				type: "range",
+				label: "scaleX",
+				min: -5,
+				max: 5,
+				step: 0.1,
+				defaultValue: 1,
+			},
+			scaleY: {
+				type: "range",
+				label: "scaleY",
+				min: -5,
+				max: 5,
+				step: 0.1,
+				defaultValue: 1,
+			},
+			rotation: {
+				type: "range",
+				label: "rotation",
+				min: 0,
+				max: 360,
+				step: 1,
+				defaultValue: 0,
+			},
+		},
+		() => {
+			isDirty.current = true;
+		},
+	);
 
 	const render = () => {
 		if (containerRef.current) {
@@ -49,7 +85,7 @@ export default function Demo08() {
 				gl.clear(gl.COLOR_BUFFER_BIT);
 				gl.useProgram(program);
 
-				const angle = 360 - transforms.rotation;
+				const angle = 360 - syncUIState.current.rotation;
 				const radian = (angle * Math.PI) / 180;
 
 				gl.enableVertexAttribArray(posAttribLoc);
@@ -57,8 +93,8 @@ export default function Demo08() {
 				gl.vertexAttribPointer(posAttribLoc, 2, gl.FLOAT, false, 0, 0);
 
 				gl.uniform2f(rotationUniformLoc, Math.sin(radian), Math.cos(radian));
-				gl.uniform2f(translateUniformLoc, transforms.x, transforms.y);
-				gl.uniform2f(scaleUniformLoc, transforms.scaleX, transforms.scaleY);
+				gl.uniform2f(translateUniformLoc, syncUIState.current.x, syncUIState.current.y);
+				gl.uniform2f(scaleUniformLoc, syncUIState.current.scaleX, syncUIState.current.scaleY);
 
 				gl.uniform4fv(colorUniformLoc, color);
 				gl.uniform2f(resolutionUniformLoc, gl.canvas.width, gl.canvas.height);
@@ -88,58 +124,7 @@ export default function Demo08() {
 			<div
 				style={{ position: "absolute", top: 0, right: 0, display: "flex", flexDirection: "column" }}
 			>
-				<label>
-					translateX:
-					<input
-						type="range"
-						min={-200}
-						max={200}
-						defaultValue={transforms.x}
-						onChange={(e) => onTransformChange("x", +e.target.value)}
-					/>
-				</label>
-				<label>
-					translateY:
-					<input
-						type="range"
-						min={-200}
-						max={200}
-						defaultValue={transforms.y}
-						onChange={(e) => onTransformChange("y", +e.target.value)}
-					/>
-				</label>
-				<label>
-					scaleX:
-					<input
-						type="range"
-						min={-5}
-						max={5}
-						step={0.1}
-						defaultValue={transforms.scaleX}
-						onChange={(e) => onTransformChange("scaleX", +e.target.value)}
-					/>
-				</label>
-				<label>
-					scaleY:
-					<input
-						type="range"
-						min={-5}
-						max={5}
-						step={0.1}
-						defaultValue={transforms.scaleY}
-						onChange={(e) => onTransformChange("scaleY", +e.target.value)}
-					/>
-				</label>
-				<label>
-					rotation:
-					<input
-						type="range"
-						min={0}
-						max={360}
-						defaultValue={transforms.rotation}
-						onChange={(e) => onTransformChange("rotation", +e.target.value)}
-					/>
-				</label>
+				{UIView}
 			</div>
 		</div>
 	);
