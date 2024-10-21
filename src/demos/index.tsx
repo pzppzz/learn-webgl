@@ -20,3 +20,4 @@ addDemo("裁剪坐标转换", "./demo06");
 addDemo("钢笔工具", "./demo07");
 addDemo("缩放、平移和旋转——基础", "./demo08");
 addDemo("缩放、平移和旋转——矩阵", "./demo09");
+addDemo("图像绘制", "./demo10");
