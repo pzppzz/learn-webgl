@@ -1,14 +1,14 @@
 import { lazy } from "react";
 
 interface DemoItem {
-	name: string;
-	component: React.LazyExoticComponent<() => JSX.Element>;
+  name: string;
+  component: React.LazyExoticComponent<() => JSX.Element>;
 }
 
 export const DEMOS: DemoItem[] = [];
 
 function addDemo(name: string, path: string) {
-	DEMOS.push({ name, component: lazy(() => import(path)) });
+  DEMOS.push({ name, component: lazy(() => import(path)) });
 }
 
 addDemo("清除画布", "./demo01");
