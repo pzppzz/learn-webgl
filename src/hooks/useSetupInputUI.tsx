@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-type InputType = "range";
+type InputType = "range" | "select";
 
 interface BasicUI<U extends InputType, R> {
   type: U;
@@ -14,7 +14,11 @@ interface InputRange extends BasicUI<"range", number> {
   step: number;
 }
 
-type InputUI = InputRange;
+interface InputSelect extends BasicUI<"select", string> {
+  options: Array<{ label: string; value: string }>;
+}
+
+type InputUI = InputRange | InputSelect;
 
 type UIConfig = Record<string, InputUI>;
 
@@ -47,25 +51,45 @@ export function useSetupInputUI<T extends UIConfig = UIConfig>(
     }
   }, []);
 
+  const renderUI = (id: string, ui: InputUI) => {
+    if (ui.type === "range") {
+      return (
+        <input
+          type="range"
+          min={ui.min}
+          max={ui.max}
+          step={ui.step}
+          value={uiState[id]}
+          onChange={(evt) => handleChange(id, +evt.target.value)}
+        />
+      );
+    }
+    if (ui.type === "select") {
+      return (
+        <select value={uiState[id]} onChange={(evt) => handleChange(id, evt.target.value)}>
+          {ui.options.map((opt) => {
+            return (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            );
+          })}
+        </select>
+      );
+    }
+    return null;
+  };
+
   const UIView = useMemo(() => {
     return Object.keys(uiConfig).map((id) => {
       const ui = uiConfig[id];
-      if (ui.type === "range") {
+      if (ui) {
         return (
           <label key={id}>
-            {ui.label}:
-            <input
-              type="range"
-              min={ui.min}
-              max={ui.max}
-              step={ui.step}
-              value={uiState[id]}
-              onChange={(evt) => handleChange(id, +evt.target.value)}
-            />
+            {ui.label}: {renderUI(id, ui)}
           </label>
         );
       }
-      return null;
     });
   }, [uiConfig, uiState]);
 
