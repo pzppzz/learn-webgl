@@ -5,6 +5,7 @@ import vertexShaderSource from "../../shaders/demo12/vertex.glsl";
 import fragShaderSource from "../../shaders/demo12/frag.glsl";
 import { mat3 } from "../../utils/matrix";
 import { useSetupInputUI } from "../../hooks/useSetupInputUI";
+import { useWatcher } from "../../hooks/useWatcher";
 
 const kernels: Record<string, number[]> = {
   normal: [0, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -31,21 +32,18 @@ const kernels: Record<string, number[]> = {
 
 export default function Demo12() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isDirty = useRef(true);
-  const { UIView, syncUIState } = useSetupInputUI(
-    {
-      kernel: {
-        type: "select",
-        label: "kernel",
-        defaultValue: "normal",
-        options: Array.from(Object.keys(kernels), (k) => ({
-          label: k,
-          value: k,
-        })),
-      },
+  const { UIView, uiState } = useSetupInputUI({
+    kernel: {
+      type: "select",
+      label: "kernel",
+      defaultValue: "normal",
+      options: Array.from(Object.keys(kernels), (k) => ({
+        label: k,
+        value: k,
+      })),
     },
-    () => (isDirty.current = true),
-  );
+  });
+  const kernelWatcher = useWatcher(uiState.kernel);
 
   const render = (image: HTMLImageElement) => {
     if (containerRef.current) {
@@ -99,27 +97,24 @@ export default function Demo12() {
 
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-      const update = () => {
-        if (isDirty.current) {
-          isDirty.current = false;
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.useProgram(program);
+      const update = (kernelName: string) => {
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(program);
 
-          const uMatrix = mat3.projection(gl.canvas.width, gl.canvas.height);
-          gl.uniformMatrix3fv(matrixUniformLoc, false, uMatrix);
-          gl.uniform2f(textureSizeUniformLoc, image.width, image.height);
-          const kernel = kernels[syncUIState.current.kernel];
-          const sum = kernel.reduce((sum, num) => sum + num, 0);
-          const weight = sum <= 0 ? 1 : sum;
-          gl.uniform1fv(kernelUniformLoc, kernel);
-          gl.uniform1f(kernelWeightLoc, weight);
+        const uMatrix = mat3.projection(gl.canvas.width, gl.canvas.height);
+        gl.uniformMatrix3fv(matrixUniformLoc, false, uMatrix);
+        gl.uniform2f(textureSizeUniformLoc, image.width, image.height);
+        const kernel = kernels[kernelName];
+        const sum = kernel.reduce((sum, num) => sum + num, 0);
+        const weight = sum <= 0 ? 1 : sum;
+        gl.uniform1fv(kernelUniformLoc, kernel);
+        gl.uniform1f(kernelWeightLoc, weight);
 
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }
-        window.requestAnimationFrame(update);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
       };
-      update();
+
+      kernelWatcher.attach(update);
     }
   };
 
