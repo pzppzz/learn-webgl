@@ -23,3 +23,4 @@ addDemo("缩放、平移和旋转——矩阵", "./demo09");
 addDemo("图像绘制", "./demo10");
 addDemo("基础动画", "./demo11");
 addDemo("图像参数调节", "./demo12");
+addDemo("图像参数叠加", "./demo13");

@@ -14,7 +14,9 @@ interface InputRange extends BasicUI<"range", number> {
   step: number;
 }
 
-interface InputSelect extends BasicUI<"select", string> {
+interface InputSelect extends BasicUI<"select", string | string[]> {
+  multiple?: boolean;
+  size?: number;
   options: Array<{ label: string; value: string }>;
 }
 
@@ -66,7 +68,25 @@ export function useSetupInputUI<T extends UIConfig = UIConfig>(
     }
     if (ui.type === "select") {
       return (
-        <select value={uiState[id]} onChange={(evt) => handleChange(id, evt.target.value)}>
+        <select
+          value={uiState[id]}
+          size={ui.size || 12}
+          multiple={ui.multiple}
+          onChange={(evt) => {
+            const value = evt.target.value;
+            if (ui.multiple) {
+              const set = new Set(uiState[id] as string[]);
+              if (set.has(value)) {
+                set.delete(value);
+              } else {
+                set.add(value);
+              }
+              handleChange(id, [...set]);
+            } else {
+              handleChange(id, value);
+            }
+          }}
+        >
           {ui.options.map((opt) => {
             return (
               <option key={opt.value} value={opt.value}>
