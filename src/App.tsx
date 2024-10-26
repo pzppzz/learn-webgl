@@ -3,7 +3,7 @@ import { DEMOS } from "./demos";
 import "./app.css";
 
 function App() {
-  const [currentIndex, setCurrentIndex] = useState(12);
+  const [currentIndex, setCurrentIndex] = useState(13);
 
   const handleShowDemo = (index: number) => {
     setCurrentIndex(index);

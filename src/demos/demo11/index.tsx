@@ -6,9 +6,11 @@ import { createProgram, createWebGL, resizeGLCanvas } from "../../utils/webgl";
 
 import dogSrc from "../../assets/dog.jpg";
 import { mat3 } from "../../utils/matrix";
+import { loop } from "../../utils/loop";
 
 export default function Demo10() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cancel = useRef<() => void>();
 
   const render = () => {
     const draw = (image: HTMLImageElement) => {
@@ -72,8 +74,23 @@ export default function Demo10() {
         let scale = 0.2;
         let x = 200;
         let y = 200;
+        const scaleSpeed = 0.5 / 1000;
+        const rotationSpeed = 720 / 1000;
+        const translateSpeed = 500 / 1000;
 
-        const animate = () => {
+        const animate = (dt: number) => {
+          angle = (angle + dt * rotationSpeed) % 360;
+          x += dt * translateSpeed * dir;
+          y += dt * translateSpeed * dir;
+          scale += dt * scaleSpeed * dir;
+          if (scale < 0.2) {
+            scale = 0.2;
+            dir = 1;
+          }
+          if (scale > 0.5) {
+            scale = 0.5;
+            dir = -1;
+          }
           gl.clearColor(0, 0, 0, 0);
           gl.clear(gl.COLOR_BUFFER_BIT);
           gl.useProgram(program);
@@ -86,29 +103,13 @@ export default function Demo10() {
             uMatrix,
             mat3.translate(mat3.create(), -image.width / 2, -image.height / 2),
           );
+
           gl.uniformMatrix3fv(matrixUniformLoc, false, uMatrix);
 
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         };
 
-        const loop = () => {
-          window.requestAnimationFrame(loop);
-          angle = (angle + 10) % 360;
-          x += 20 * dir;
-          y += 20 * dir;
-          scale += 0.02 * dir;
-          if (scale < 0.2) {
-            scale = 0.2;
-            dir = 1;
-          }
-          if (scale > 1) {
-            scale = 1;
-            dir = -1;
-          }
-          animate();
-        };
-
-        loop();
+        cancel.current = loop(animate);
       }
     };
 
@@ -121,6 +122,9 @@ export default function Demo10() {
 
   useEffect(() => {
     render();
+    return () => {
+      cancel.current?.();
+    };
   }, []);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }}></div>;

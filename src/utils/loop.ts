@@ -1,10 +1,18 @@
 export function loop(cb: (dt: number) => void) {
   let animationId: number = -1;
-  const func = (dt: number) => {
+  let lastTimestamp = 0;
+
+  const func = (timestamp: number) => {
+    if (!lastTimestamp) {
+      lastTimestamp = timestamp;
+    }
     animationId = window.requestAnimationFrame(func);
+    const dt = timestamp - lastTimestamp;
+    lastTimestamp = timestamp;
     cb(dt);
   };
-  func(0);
+
+  func(lastTimestamp);
   return () => {
     window.cancelAnimationFrame(animationId);
   };

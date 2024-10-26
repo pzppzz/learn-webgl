@@ -24,3 +24,4 @@ addDemo("图像绘制", "./demo10");
 addDemo("基础动画", "./demo11");
 addDemo("图像参数调节", "./demo12");
 addDemo("图像参数叠加", "./demo13");
+addDemo("Varying-可变量", "./demo14");
