@@ -50,6 +50,22 @@ export default function Demo08() {
         step: 1,
         defaultValue: 0,
       },
+      skewX: {
+        type: "range",
+        label: "skewX",
+        min: -10,
+        max: 10,
+        step: 0.1,
+        defaultValue: 0,
+      },
+      skewY: {
+        type: "range",
+        label: "skewY",
+        min: -10,
+        max: 10,
+        step: 0.1,
+        defaultValue: 0,
+      },
     },
     () => {
       isDirty.current = true;
@@ -72,6 +88,7 @@ export default function Demo08() {
       const scaleUniformLoc = gl.getUniformLocation(program, "u_Scale");
       const rotationUniformLoc = gl.getUniformLocation(program, "u_Rotation");
       const translateUniformLoc = gl.getUniformLocation(program, "u_Translate");
+      const skewUniformLoc = gl.getUniformLocation(program, "u_Skew");
 
       const positionBuffer = gl.createBuffer();
       const positionData = [0, 0, 0, 200, 400, 200, 0, 0, 400, 0, 400, 200];
@@ -95,6 +112,7 @@ export default function Demo08() {
         gl.uniform2f(rotationUniformLoc, Math.sin(radian), Math.cos(radian));
         gl.uniform2f(translateUniformLoc, syncUIState.current.x, syncUIState.current.y);
         gl.uniform2f(scaleUniformLoc, syncUIState.current.scaleX, syncUIState.current.scaleY);
+        gl.uniform2f(skewUniformLoc, syncUIState.current.skewX, syncUIState.current.skewY);
 
         gl.uniform4fv(colorUniformLoc, color);
         gl.uniform2f(resolutionUniformLoc, gl.canvas.width, gl.canvas.height);

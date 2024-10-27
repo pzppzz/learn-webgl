@@ -37,6 +37,12 @@ export const mat3 = {
     rotateMat[4] = cos;
     return mat3.multiply(target, rotateMat);
   },
+  skew(target: Mat3, skewX: number, skewY: number) {
+    const skewMat = mat3.create();
+    skewMat[1] = skewY;
+    skewMat[3] = skewX;
+    return mat3.multiply(target, skewMat);
+  },
   multiply(a: Mat3, b: Mat3) {
     const a00 = a[0 * 3 + 0];
     const a01 = a[0 * 3 + 1];

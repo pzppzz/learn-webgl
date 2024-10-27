@@ -51,6 +51,22 @@ export default function Demo09() {
         step: 1,
         defaultValue: 0,
       },
+      skewX: {
+        type: "range",
+        label: "skewX",
+        min: -10,
+        max: 10,
+        step: 0.1,
+        defaultValue: 0,
+      },
+      skewY: {
+        type: "range",
+        label: "skewY",
+        min: -10,
+        max: 10,
+        step: 0.1,
+        defaultValue: 0,
+      },
     },
     () => {
       isDirty.current = true;
@@ -94,6 +110,11 @@ export default function Demo09() {
           syncUIState.current.x,
           syncUIState.current.y,
         );
+        const skewMat = mat3.skew(
+          mat3.create(),
+          syncUIState.current.skewX,
+          syncUIState.current.skewY,
+        );
 
         gl.enableVertexAttribArray(posAttribLoc);
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -106,6 +127,7 @@ export default function Demo09() {
           uMatrix = mat3.multiply(uMatrix, translateMat);
           uMatrix = mat3.multiply(uMatrix, rotateMat);
           uMatrix = mat3.multiply(uMatrix, scaleMat);
+          uMatrix = mat3.multiply(uMatrix, skewMat);
           gl.uniformMatrix3fv(matrixUniformLoc, false, uMatrix);
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
