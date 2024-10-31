@@ -25,7 +25,8 @@ export default function Demo14() {
       const colorBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 
-      const speed = 200 / 1000;
+      const speedX = (Math.random() * 100 + 300) / 1000;
+      const speedY = (Math.random() * 100 + 300) / 1000;
 
       let x = 0;
       let y = 0;
@@ -33,8 +34,8 @@ export default function Demo14() {
       let dirY = 1;
 
       const updateXY = (dt: number) => {
-        x += speed * dt * dirX;
-        y += speed * dt * dirY;
+        x += speedX * dt * dirX;
+        y += speedY * dt * dirY;
         if (x + 200 >= gl.canvas.width) {
           x = gl.canvas.width - 200;
           dirX *= -1;
