@@ -1,19 +1,41 @@
-export function loop(cb: (dt: number) => void) {
-  let animationId: number = -1;
-  let lastTimestamp = 0;
+interface LoopConfig {
+  interval?: number;
+  duration?: number;
+}
 
-  const func = (timestamp: number) => {
-    if (!lastTimestamp) {
-      lastTimestamp = timestamp;
+export function loop(cb: (dt: number) => void, config: LoopConfig = {}) {
+  const { interval = 1000 / 60, duration = Number.POSITIVE_INFINITY } = config;
+  let requestId = -1;
+  let lastTime = 0;
+  let accTime = 0;
+  let durationTime = 0;
+
+  const cancel = () => {
+    if (requestId !== -1) {
+      window.cancelAnimationFrame(requestId);
+      requestId = -1;
     }
-    animationId = window.requestAnimationFrame(func);
-    const dt = timestamp - lastTimestamp;
-    lastTimestamp = timestamp;
-    cb(dt);
   };
 
-  func(lastTimestamp);
-  return () => {
-    window.cancelAnimationFrame(animationId);
+  const tick = (currentTime = performance.now()) => {
+    if (currentTime > lastTime) {
+      accTime += currentTime - lastTime;
+      durationTime += currentTime - lastTime;
+      while (accTime >= interval) {
+        accTime -= interval;
+        cb(interval);
+      }
+      lastTime = currentTime;
+      if (durationTime >= duration) {
+        return cancel();
+      }
+    }
+    lastTime = currentTime;
+    requestId = window.requestAnimationFrame(tick);
   };
+
+  lastTime = performance.now();
+  requestId = window.requestAnimationFrame(tick);
+
+  return cancel;
 }
